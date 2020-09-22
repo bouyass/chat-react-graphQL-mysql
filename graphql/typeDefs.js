@@ -10,4 +10,8 @@ type User{
 type Query {
   getUsers: [User]!
 }
+
+type Mutation {
+    register(username: String!, email: String!, password: String!, confirmPassword: String!): User! 
+}
 `

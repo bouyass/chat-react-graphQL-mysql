@@ -1,5 +1,6 @@
 const { ApolloServer } = require('apollo-server');
 
+// squelize object to handle database 
 const { sequelize } = require('./models')
 
 // The GraphQL schema
@@ -20,6 +21,6 @@ server.listen().then(({ url }) => {
     .authenticate()
     .then(() => console.log('database connected'))
     .catch((err) => console.log(err))
-    
+
 });
 
