@@ -30,11 +30,12 @@ Query: {
         const { username, password } = args
 
         try{
-
+            
             // check if the username exist 
             const user = await User.findOne({where: {username}})
             if(!user){
                 errors.username = 'user not found'
+                throw errors
             }
 
             // check if the password is valid 
@@ -59,6 +60,7 @@ Query: {
             }
  
         }catch(err){
+            console.log(err)
             throw new UserInputError('Authentication failed', {errors: err})
         }
         
