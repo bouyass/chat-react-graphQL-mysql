@@ -2,39 +2,55 @@ import React, { useState, useEffect  } from 'react'
 import { Row, Col, Form, Button } from 'react-bootstrap'
 import { gql, useQuery, useLazyQuery } from '@apollo/client';
 import { Link } from 'react-router-dom'
-import Toast from 'react-bootstrap/Toast'
-import ToastBody from 'react-bootstrap/ToastBody'
-import ToastHeader from 'react-bootstrap/ToastHeader'
+import { Toast } from 'react-bootstrap'
+
 
 const LOGIN_USER = gql`
   query login($username: String!  $password: String! ) {
     login(username: $username password: $password) {
-      username email
+      username
+      email
+      createdAt
+      token
     }
   }
 `;
 
 export default function Login(props) {
 
-    const [show, setShow] = useState(false);
+    var timeout
+
     const[variables, setVariables] = useState({
         username: "",
         password: "",
       });
 
       const [errors, setErrors] = useState({})
+      const [show, setShow] = useState(false)
+
+     
 
       const [loginUser, { loading }] = useLazyQuery(LOGIN_USER, {
         onError: (err) => {
           setErrors(err.graphQLErrors[0].extensions.errors)
         },
-        onCompleted: (res) => {
-            props.history.push('/home')
+        onCompleted: (data) => {
+            localStorage.setItem('token',data.login.token)
+            props.history.push('/')
         } 
     });
 
+
+    function myFunction() {
+        timeout = setTimeout(function(){
+            setShow(false)
+        }, 3000);
+
+    }
+
       useEffect(() => {  
-        setShow(true)
+        setShow(props.history.location.state === undefined ? false : true)
+        myFunction()
      });
 
       const submitLoginForm = (e) => {
@@ -86,20 +102,20 @@ export default function Login(props) {
           </Form>
         </Col>
 
+        <Toast  show={show} 
+            style={{
+                position: 'absolute',
+                bottom: 0,
+                right: 0,
+            }}>
 
-        <Toast onClose={() => setShow(false)} show={show} delay={3000} autohide>
-          <Toast.Header>
-            <img
-              src="holder.js/20x20?text=%20"
-              className="rounded mr-2"
-              alt=""
-            />
-            <strong className="mr-auto">Bootstrap</strong>
-            <small>11 mins ago</small>
-          </Toast.Header>
-          <Toast.Body>Woohoo, you're reading this text in a Toast!</Toast.Body>
+            <Toast.Header>
+                <img src="holder.js/20x20?text=%20" className="rounded mr-2" alt="" />
+                <strong className="mr-auto">Server Notification </strong>
+            </Toast.Header>
+            <Toast.Body style={{color: 'green'}}> <b>You've been registered successfully </b></Toast.Body>
         </Toast>
-
+    
 
       </Row>
     )
